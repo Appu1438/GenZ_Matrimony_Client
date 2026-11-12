@@ -1,0 +1,26 @@
+.app-home {
+  max-width: 560px;
+  padding: var(--space-10) 0;
+}
+
+.app-home__eyebrow {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.app-home__title {
+  font-size: var(--fs-2xl);
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.app-home__subtitle {
+  font-size: var(--fs-md);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
