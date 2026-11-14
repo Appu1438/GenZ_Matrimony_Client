@@ -1,5 +1,5 @@
-import AppLayout from '../components/layout/AppLayout.jsx';
-import useAuth from '../hooks/useAuth.js';
+import AppLayout from '../../components/layout/AppLayout.jsx';
+import useAuth from '../../hooks/useAuth.js';
 import './AppHome.css';
 
 export function AppHome() {

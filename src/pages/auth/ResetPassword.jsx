@@ -3,18 +3,18 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
-import AuthLayout from '../components/layout/AuthLayout.jsx';
-import AuthCard from '../components/ui/AuthCard.jsx';
-import FormField from '../components/ui/FormField.jsx';
-import PasswordInput from '../components/ui/PasswordInput.jsx';
-import PasswordStrength from '../components/ui/PasswordStrength.jsx';
-import Button from '../components/ui/Button.jsx';
+import AuthLayout from '../../components/layout/AuthLayout.jsx';
+import AuthCard from '../../components/ui/AuthCard.jsx';
+import FormField from '../../components/ui/FormField.jsx';
+import PasswordInput from '../../components/ui/PasswordInput.jsx';
+import PasswordStrength from '../../components/ui/PasswordStrength.jsx';
+import Button from '../../components/ui/Button.jsx';
 
-import authService from '../services/authService.js';
+import authService from '../../services/authService.js';
 import {
   validateNewPassword,
   validateConfirmPassword,
-} from '../utils/validation.js';
+} from '../../utils/validation.js';
 
 import './AuthForm.css';
 

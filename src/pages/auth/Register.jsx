@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthLayout from '../components/layout/AuthLayout.jsx';
-import AuthCard from '../components/ui/AuthCard.jsx';
-import FormField from '../components/ui/FormField.jsx';
-import Input from '../components/ui/Input.jsx';
-import PasswordInput from '../components/ui/PasswordInput.jsx';
-import PasswordStrength from '../components/ui/PasswordStrength.jsx';
-import Checkbox from '../components/ui/Checkbox.jsx';
-import Button from '../components/ui/Button.jsx';
-import Divider from '../components/ui/Divider.jsx';
-import GoogleButton from '../components/ui/GoogleButton.jsx';
-import useAuth from '../hooks/useAuth.js';
+import AuthLayout from '../../components/layout/AuthLayout.jsx';
+import AuthCard from '../../components/ui/AuthCard.jsx';
+import FormField from '../../components/ui/FormField.jsx';
+import Input from '../../components/ui/Input.jsx';
+import PasswordInput from '../../components/ui/PasswordInput.jsx';
+import PasswordStrength from '../../components/ui/PasswordStrength.jsx';
+import Checkbox from '../../components/ui/Checkbox.jsx';
+import Button from '../../components/ui/Button.jsx';
+import Divider from '../../components/ui/Divider.jsx';
+import GoogleButton from '../../components/ui/GoogleButton.jsx';
+import useAuth from '../../hooks/useAuth.js';
 import {
   validateFullName,
   validateEmail,
@@ -18,7 +18,7 @@ import {
   validateNewPassword,
   validateConfirmPassword,
   validateTermsAccepted,
-} from '../utils/validation.js';
+} from '../../utils/validation.js';
 import './AuthForm.css';
 import toast from "react-hot-toast";
 

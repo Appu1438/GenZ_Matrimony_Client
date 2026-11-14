@@ -53,8 +53,8 @@ export function Footer() {
         {/* Legal */}
         <div className="app-footer__column">
           <h3>Legal</h3>
-          <Link to="/terms">Terms & Conditions</Link>
-          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/terms-and-conditions">Terms & Conditions</Link>
+          <Link to="/privacy-policy">Privacy Policy</Link>
         </div>
 
       </div>

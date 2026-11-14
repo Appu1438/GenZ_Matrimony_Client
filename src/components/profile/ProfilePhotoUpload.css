@@ -1,0 +1,374 @@
+/* ==========================================================================
+   Profile + gallery photo upload
+   Uses the global design tokens from index.css (no hardcoded colors).
+   ========================================================================== */
+
+.photo-upload {
+    display: grid;
+    gap: var(--space-8);
+    width: 100%;
+    margin-top: var(--space-6);
+}
+
+.photo-upload .btn {
+    width: auto;
+    min-height: 44px;
+}
+
+/* ---- Section headings (match the form's section titles) ---- */
+.photo-upload__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.photo-upload__title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+}
+
+.photo-upload__text {
+    margin: var(--space-2) 0 var(--space-4);
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+}
+
+/* ---- Profile photo card ---- */
+.photo-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--space-5);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+
+.photo-card.is-dragging,
+.photo-gallery.is-dragging {
+    border-color: var(--color-primary);
+    background: var(--color-primary-tint);
+}
+
+.photo-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+}
+
+.photo-card__body strong {
+    font-size: var(--fs-base);
+    color: var(--color-text);
+}
+
+.photo-card__body p {
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+}
+
+.photo-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-2);
+}
+
+/* ---- Avatar button ---- */
+.photo-avatar {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 120px;
+    height: 120px;
+    padding: 0;
+    overflow: hidden;
+    border: 2px dashed var(--color-border-strong);
+    border-radius: 50%;
+    background: var(--color-surface-sunken);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.photo-avatar:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.photo-avatar.has-photo {
+    border-style: solid;
+    border-color: var(--color-border);
+}
+
+.photo-avatar:disabled {
+    cursor: not-allowed;
+}
+
+.photo-avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-avatar__empty {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-1);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+}
+
+.photo-avatar__hover {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--color-text) 55%, transparent);
+    color: #fff;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.photo-avatar:hover:not(:disabled) .photo-avatar__hover,
+.photo-avatar:focus-visible .photo-avatar__hover {
+    opacity: 1;
+}
+
+/* ---- Gallery ---- */
+.photo-gallery {
+    padding: var(--space-4);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+
+.photo-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    gap: var(--space-3);
+}
+
+.photo-tile {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-sunken);
+}
+
+.photo-tile img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-tile__remove {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-text) 78%, transparent);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.photo-tile__remove:hover:not(:disabled) {
+    background: var(--color-error);
+}
+
+.photo-tile__remove:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* ---- "Add photos" tile ---- */
+.photo-add-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    width: 100%;
+    aspect-ratio: 1;
+    padding: var(--space-2);
+    border: 1.5px dashed var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out),
+        color var(--dur-fast) var(--ease-out);
+}
+
+.photo-add-tile small {
+    font-size: var(--fs-xs);
+    font-weight: 500;
+}
+
+.photo-add-tile:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    background: var(--color-primary-tint);
+    color: var(--color-primary);
+}
+
+.photo-add-tile:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* ---- Upload / delete spinner overlay ---- */
+.photo-spinner {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+}
+
+.photo-spinner::after {
+    content: "";
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--color-primary-tint);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: photo-spin 0.7s linear infinite;
+}
+
+@keyframes photo-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---- Inline delete confirmation ---- */
+.photo-confirm {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    background: color-mix(in srgb, var(--color-text) 84%, transparent);
+    color: #fff;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-align: center;
+}
+
+.photo-confirm__buttons {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.photo-confirm button {
+    min-height: 32px;
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.photo-confirm__delete {
+    background: var(--color-error);
+    color: #fff;
+}
+
+.photo-confirm__keep {
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+/* Variant used inside the profile photo card */
+.photo-confirm--inline {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    background: var(--color-error-tint);
+    color: var(--color-text);
+    font-size: var(--fs-sm);
+    text-align: left;
+}
+
+.photo-confirm--inline button {
+    min-height: 36px;
+    font-size: var(--fs-sm);
+}
+
+.photo-confirm--inline .photo-confirm__keep {
+    border: 1.5px solid var(--color-border-strong);
+}
+
+/* ---- Text-style delete button ---- */
+.photo-upload__danger-link {
+    padding: var(--space-2) 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-error);
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.photo-upload__danger-link:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+.photo-upload__danger-link:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 560px) {
+    .photo-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .photo-avatar {
+        width: 104px;
+        height: 104px;
+    }
+
+    .photo-gallery__grid {
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    }
+}

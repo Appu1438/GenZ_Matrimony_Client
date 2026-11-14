@@ -2,11 +2,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
-import AuthLayout from '../components/layout/AuthLayout.jsx';
-import AuthCard from '../components/ui/AuthCard.jsx';
-import Button from '../components/ui/Button.jsx';
+import AuthLayout from '../../components/layout/AuthLayout.jsx';
+import AuthCard from '../../components/ui/AuthCard.jsx';
+import Button from '../../components/ui/Button.jsx';
 
-import { verifyEmail } from '../services/authService';
+import { verifyEmail } from '../../services/authService.js';
 import './VerifyEmail.css';
 
 const VerifyEmail = () => {

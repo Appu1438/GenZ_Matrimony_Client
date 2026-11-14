@@ -1,111 +1,76 @@
 
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 // Authentication pages
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import ForgotPassword from "./pages/ForgotPassword.jsx";
-import ResetPassword from "./pages/ResetPassword.jsx";
-import VerifyEmail from "./pages/VerifyEmail.jsx";
+import Login from "./pages/auth/Login.jsx";
+import Register from "./pages/auth/Register.jsx";
+import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
+import ResetPassword from "./pages/auth/ResetPassword.jsx";
+import VerifyEmail from "./pages/auth/VerifyEmail.jsx";
 
 // Public information pages
-import Terms from "./pages/Terms.jsx";
-import Privacy from "./pages/Privacy.jsx";
-import Support from "./pages/Support.jsx";
+import Terms from "./pages/common/Terms.jsx";
+import Privacy from "./pages/common/Privacy.jsx";
+import Support from "./pages/common/Support.jsx";
 
-// Application
-import AppHome from "./pages/AppHome.jsx";
+// Application pages
+import AppHome from "./pages/app/AppHome.jsx";
+
+// Onboarding pages
+import ProfileSetup from "./pages/onboarding/ProfileSetup.jsx";
+import ProfileStatus from "./pages/onboarding/ProfileStatus.jsx";
 
 // Route guards
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import GuestRoute from "./routes/GuestRoute.jsx";
+import ProfileGate from "./routes/ProfileGate.jsx";
 
 export function App() {
   return (
     <Routes>
 
       {/* Default route */}
-      <Route
-        path="/"
-        element={<Navigate to="/app" replace />}
-      />
+      <Route path="/" element={<Navigate to="/app" replace />} />
 
-      {/* Guest-only authentication routes */}
-      <Route
-        path="/login"
-        element={
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        }
-      />
+      {/* Public information pages - No authentication or ProfileGate */}
+      <Route path="/terms-and-conditions" element={<Terms />} />
+      <Route path="/privacy-policy" element={<Privacy />} />
+      <Route path="/support" element={<Support />} />
 
-      <Route
-        path="/register"
-        element={
-          <GuestRoute>
-            <Register />
-          </GuestRoute>
-        }
-      />
+      {/* Guest / Authentication routes */}
+      <Route element={<GuestRoute><Outlet /></GuestRoute>}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Route>
 
-      <Route
-        path="/forgot-password"
-        element={
-          <GuestRoute>
-            <ForgotPassword />
-          </GuestRoute>
-        }
-      />
+      {/* Authenticated application */}
+      <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
 
-      <Route
-        path="/reset-password"
-        element={
-          <GuestRoute>
-            <ResetPassword />
-          </GuestRoute>
-        }
-      />
+        {/* Profile status verification */}
+        <Route element={<ProfileGate><Outlet /></ProfileGate>}>
 
-      {/* Public routes - No authentication required */}
+          {/* Onboarding */}
+          <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/profile-status" element={<ProfileStatus />} />
 
-      <Route
-        path="/verify-email"
-        element={<VerifyEmail />}
-      />
+          {/* Approved member pages */}
+          <Route path="/app" element={<AppHome />} />
 
-      <Route
-        path="/terms-and-conditions"
-        element={<Terms />}
-      />
+          {/* Future application pages */}
+          {/* <Route path="/discover" element={<Discover />} /> */}
+          {/* <Route path="/matches" element={<Matches />} /> */}
+          {/* <Route path="/messages" element={<Messages />} /> */}
+          {/* <Route path="/notifications" element={<Notifications />} /> */}
+          {/* <Route path="/settings" element={<Settings />} /> */}
 
-      <Route
-        path="/privacy-policy"
-        element={<Privacy />}
-      />
-
-      <Route
-        path="/support"
-        element={<Support />}
-      />
-
-      {/* Protected application routes */}
-
-      <Route
-        path="/app"
-        element={
-          <ProtectedRoute>
-            <AppHome />
-          </ProtectedRoute>
-        }
-      />
+        </Route>
+      </Route>
 
       {/* Fallback */}
-
-      <Route
-        path="*"
-        element={<Navigate to="/app" replace />}
-      />
+      <Route path="*" element={<Navigate to="/app" replace />} />
 
     </Routes>
   );

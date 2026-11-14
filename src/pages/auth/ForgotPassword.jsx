@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
-import AuthLayout from '../components/layout/AuthLayout.jsx';
-import AuthCard from '../components/ui/AuthCard.jsx';
-import FormField from '../components/ui/FormField.jsx';
-import Input from '../components/ui/Input.jsx';
-import Button from '../components/ui/Button.jsx';
+import AuthLayout from '../../components/layout/AuthLayout.jsx';
+import AuthCard from '../../components/ui/AuthCard.jsx';
+import FormField from '../../components/ui/FormField.jsx';
+import Input from '../../components/ui/Input.jsx';
+import Button from '../../components/ui/Button.jsx';
 
-import authService from '../services/authService.js';
-import { validateIdentifier } from '../utils/validation.js';
+import authService from '../../services/authService.js';
+import { validateIdentifier } from '../../utils/validation.js';
 
 import './AuthForm.css';
 

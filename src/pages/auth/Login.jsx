@@ -1,21 +1,21 @@
 
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import AuthLayout from '../components/layout/AuthLayout.jsx';
-import AuthCard from '../components/ui/AuthCard.jsx';
-import FormField from '../components/ui/FormField.jsx';
-import Input from '../components/ui/Input.jsx';
-import PasswordInput from '../components/ui/PasswordInput.jsx';
-import Checkbox from '../components/ui/Checkbox.jsx';
-import Button from '../components/ui/Button.jsx';
-import useAuth from '../hooks/useAuth.js';
+import AuthLayout from '../../components/layout/AuthLayout.jsx';
+import AuthCard from '../../components/ui/AuthCard.jsx';
+import FormField from '../../components/ui/FormField.jsx';
+import Input from '../../components/ui/Input.jsx';
+import PasswordInput from '../../components/ui/PasswordInput.jsx';
+import Checkbox from '../../components/ui/Checkbox.jsx';
+import Button from '../../components/ui/Button.jsx';
+import useAuth from '../../hooks/useAuth.js';
 import {
   validateIdentifier,
   validateLoginPassword,
-} from '../utils/validation.js';
+} from '../../utils/validation.js';
 import './AuthForm.css';
 import toast from 'react-hot-toast';
-import { resendVerificationEmail } from '../services/authService';
+import { resendVerificationEmail } from '../../services/authService.js';
 
 export function Login() {
   const { login } = useAuth();

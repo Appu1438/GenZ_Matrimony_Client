@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
-import PublicLayout from '../components/layout/PublicLayout.jsx';
-import '../styles/PublicPages.css';
+import PublicLayout from '../../components/layout/PublicLayout.jsx';
+import '../../styles/PublicPages.css';
 
 const sections = [
   ['acceptance', 'Acceptance of Terms'],

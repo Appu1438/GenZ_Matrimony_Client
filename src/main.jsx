@@ -5,6 +5,7 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import './index.css';
 import { Toaster } from 'react-hot-toast';
+import { ProfileProvider } from './context/ProfileContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -29,7 +30,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         }}
       />
       <AuthProvider>
-        <App />
+        <ProfileProvider>
+          <App />
+        </ProfileProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
