@@ -1,3 +1,4 @@
+
 /* ==========================================================================
    Profile option data + small helpers
    Pure data / functions only — no React in this file.
@@ -28,6 +29,7 @@ export function writePath(object, path, value) {
                 source?.[key] && typeof source[key] === "object" && !Array.isArray(source[key])
                     ? source[key]
                     : {};
+
             cursor[key] = { ...next };
             cursor = cursor[key];
             source = next;
@@ -39,14 +41,21 @@ export function writePath(object, path, value) {
 
 /* ---- Option normalisation ---- */
 const toItem = (option) =>
-    option !== null && typeof option === "object" ? option : { value: option, label: String(option) };
+    option !== null && typeof option === "object"
+        ? option
+        : { value: option, label: String(option) };
 
 /** Normalises any supported option shape into [{ label, items: [{ value, label }] }]. */
 export function toGroups(options = []) {
     if (!options.length) return [];
+
     if (options[0] && typeof options[0] === "object" && "items" in options[0]) {
-        return options.map((group) => ({ label: group.group, items: group.items.map(toItem) }));
+        return options.map((group) => ({
+            label: group.group,
+            items: group.items.map(toItem),
+        }));
     }
+
     return [{ label: null, items: options.map(toItem) }];
 }
 
@@ -56,16 +65,58 @@ export const YES_NO = [
     { value: false, label: "No" },
 ];
 
-export const PROFILE_FOR_OPTIONS = ["Self", "Son", "Daughter", "Brother", "Sister", "Relative", "Friend"];
+export const PROFILE_FOR_OPTIONS = [
+    "Self",
+    "Son",
+    "Daughter",
+    "Brother",
+    "Sister",
+    "Relative",
+    "Friend",
+];
 
-export const GENDER_BY_RELATION = { Son: "male", Brother: "male", Daughter: "female", Sister: "female" };
+export const GENDER_BY_RELATION = {
+    Son: "male",
+    Brother: "male",
+    Daughter: "female",
+    Sister: "female",
+};
 
+/**
+ * Gender options for the person whose profile is being created.
+ *
+ * Values are stored as stable identifiers in the database.
+ */
 export const GENDER_OPTIONS = [
     { value: "male", label: "Male" },
     { value: "female", label: "Female" },
+    { value: "non_binary", label: "Non-binary" },
+    { value: "self_described", label: "Self-described / Another gender" },
+    { value: "prefer_not_to_say", label: "Prefer not to say" },
 ];
 
-export const MARITAL_STATUS_OPTIONS = ["Never married", "Divorced", "Widowed", "Awaiting divorce"];
+/**
+ * Gender options for partner preferences.
+ *
+ * "Prefer not to say" is intentionally excluded because it describes
+ * the profile owner's disclosure choice, not a partner gender.
+ *
+ * Multiple selections are supported by the multi-select field.
+ * An empty array means the user has no gender restriction.
+ */
+export const GENDER_PREFERENCE_OPTIONS = [
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+    { value: "non_binary", label: "Non-binary" },
+    { value: "self_described", label: "Self-described / Another gender" },
+];
+
+export const MARITAL_STATUS_OPTIONS = [
+    "Never married",
+    "Divorced",
+    "Widowed",
+    "Awaiting divorce",
+];
 
 export const LANGUAGE_OPTIONS = [
     "Malayalam", "Tamil", "Hindi", "English", "Kannada", "Telugu", "Tulu",
@@ -74,15 +125,33 @@ export const LANGUAGE_OPTIONS = [
 ];
 
 /* ---- Religion & community ---- */
-export const RELIGION_CHOICES = ["Hindu", "Muslim", "Christian", "Sikh", "Buddhist", "Jain", "Jewish"];
-export const RELIGION_OPTIONS = [...RELIGION_CHOICES, "Prefer not to say"];
+export const RELIGION_CHOICES = [
+    "Hindu",
+    "Muslim",
+    "Christian",
+    "Sikh",
+    "Buddhist",
+    "Jain",
+    "Jewish",
+];
+
+export const RELIGION_OPTIONS = [
+    ...RELIGION_CHOICES,
+    "Prefer not to say",
+];
 
 /** Communities depend on the religion that is selected. */
 export const COMMUNITIES_BY_RELIGION = {
     Hindu: ["Nair", "Ezhava / Thiyya", "Namboodiri", "Vishwakarma", "Dheevara"],
     Christian: [
-        "Latin Catholic", "Syro-Malabar Catholic", "Syro-Malankara Catholic",
-        "Orthodox", "Jacobite", "Marthoma", "Pentecostal", "CSI",
+        "Latin Catholic",
+        "Syro-Malabar Catholic",
+        "Syro-Malankara Catholic",
+        "Orthodox",
+        "Jacobite",
+        "Marthoma",
+        "Pentecostal",
+        "CSI",
     ],
     Muslim: ["Sunni", "Mujahid", "Jamaat-e-Islami"],
 };
@@ -94,13 +163,27 @@ export function communityGroupsFor(religions = []) {
     const keys = religions.length
         ? religions.filter((religion) => COMMUNITIES_BY_RELIGION[religion])
         : Object.keys(COMMUNITIES_BY_RELIGION);
-    return keys.map((religion) => ({ group: religion, items: COMMUNITIES_BY_RELIGION[religion] }));
+
+    return keys.map((religion) => ({
+        group: religion,
+        items: COMMUNITIES_BY_RELIGION[religion],
+    }));
 }
 
 /** Horoscope details are only asked for religions where they are commonly used. */
-export const HOROSCOPE_RELIGIONS = ["Hindu", "Jain", "Sikh", "Buddhist"];
+export const HOROSCOPE_RELIGIONS = [
+    "Hindu",
+    "Jain",
+    "Sikh",
+    "Buddhist",
+];
 
-export const DOSHAM_OPTIONS = ["Yes", "No", "Not sure", "Prefer not to say"];
+export const DOSHAM_OPTIONS = [
+    "Yes",
+    "No",
+    "Not sure",
+    "Prefer not to say",
+];
 
 export const BIRTH_STARS = [
     "Aswathi", "Bharani", "Karthika", "Rohini", "Makayiram", "Thiruvathira", "Punartham",
@@ -175,8 +258,11 @@ const unique = (list) => [...new Set(list)];
 /** City suggestions that match the chosen country (and state, for India). */
 export function citySuggestions(country, state) {
     if (isIndia(country)) {
-        return state === "Kerala" ? KERALA_CITIES : unique([...KERALA_CITIES, ...METRO_CITIES]);
+        return state === "Kerala"
+            ? KERALA_CITIES
+            : unique([...KERALA_CITIES, ...METRO_CITIES]);
     }
+
     return CITY_BY_COUNTRY[country] ?? [];
 }
 
@@ -187,22 +273,40 @@ export function preferredCityOptions(prefs = {}) {
     const options = [];
 
     if (!countries.length || countries.includes("India")) {
-        options.push(...(states.length === 1 && states[0] === "Kerala"
-            ? KERALA_CITIES
-            : [...KERALA_CITIES, ...METRO_CITIES]));
+        options.push(
+            ...(states.length === 1 && states[0] === "Kerala"
+                ? KERALA_CITIES
+                : [...KERALA_CITIES, ...METRO_CITIES])
+        );
     }
-    countries.filter((country) => country !== "India").forEach((country) => {
-        options.push(...(CITY_BY_COUNTRY[country] ?? []));
-    });
+
+    countries
+        .filter((country) => country !== "India")
+        .forEach((country) => {
+            options.push(...(CITY_BY_COUNTRY[country] ?? []));
+        });
 
     return unique(options);
 }
 
-export const NATIVE_PLACE_SUGGESTIONS = unique([...KERALA_CITIES, ...METRO_CITIES]);
+export const NATIVE_PLACE_SUGGESTIONS = unique([
+    ...KERALA_CITIES,
+    ...METRO_CITIES,
+]);
 
 /* ---- Education & career ---- */
-export const EDUCATION_OPTIONS = ["High school", "Diploma", "Bachelor's", "Master's", "Doctorate", "Other"];
-export const EDUCATION_PREFERENCE_OPTIONS = EDUCATION_OPTIONS.filter((level) => level !== "Other");
+export const EDUCATION_OPTIONS = [
+    "High school",
+    "Diploma",
+    "Bachelor's",
+    "Master's",
+    "Doctorate",
+    "Other",
+];
+
+export const EDUCATION_PREFERENCE_OPTIONS = EDUCATION_OPTIONS.filter(
+    (level) => level !== "Other"
+);
 
 export const QUALIFICATIONS_BY_LEVEL = {
     "High school": ["SSLC / 10th", "Plus Two / 12th", "CBSE 12th", "ICSE / ISC 12th"],
@@ -211,7 +315,10 @@ export const QUALIFICATIONS_BY_LEVEL = {
         "B.Tech / B.E", "B.Sc", "B.Com", "BBA", "BCA", "BA", "MBBS", "BDS", "B.Pharm",
         "B.Sc Nursing", "B.Arch", "LLB", "B.Ed",
     ],
-    "Master's": ["M.Tech / M.E", "M.Sc", "MBA", "MCA", "M.Com", "MA", "MD / MS", "M.Pharm", "LLM", "M.Ed", "M.Arch"],
+    "Master's": [
+        "M.Tech / M.E", "M.Sc", "MBA", "MCA", "M.Com", "MA", "MD / MS",
+        "M.Pharm", "LLM", "M.Ed", "M.Arch",
+    ],
     Doctorate: ["PhD", "DM", "MCh"],
 };
 
@@ -227,20 +334,47 @@ export const SPECIALIZATION_SUGGESTIONS = [
 export const EMPLOYMENT_OPTIONS = [
     "Employed", "Self-employed", "Business", "Government", "Student", "Not working", "Other",
 ];
-export const EMPLOYMENT_PREFERENCE_OPTIONS = EMPLOYMENT_OPTIONS.filter((type) => type !== "Other");
+
+export const EMPLOYMENT_PREFERENCE_OPTIONS = EMPLOYMENT_OPTIONS.filter(
+    (type) => type !== "Other"
+);
 
 /** Employment types where job title / employer / work location don't apply. */
 export const NOT_WORKING_TYPES = ["Student", "Not working"];
 
 export const OCCUPATION_GROUPS = [
-    { group: "Healthcare", items: ["Doctor", "Dentist", "Nurse", "Pharmacist", "Physiotherapist", "Healthcare professional"] },
-    { group: "Engineering & technology", items: ["Engineer", "Software developer", "IT professional", "Data / AI professional", "Architect"] },
-    { group: "Business & finance", items: ["Business owner", "Entrepreneur", "Chartered accountant", "Accountant", "Bank employee", "Sales & marketing"] },
-    { group: "Education & research", items: ["Teacher", "Professor", "Scientist"] },
-    { group: "Government & defence", items: ["Government employee", "Civil services", "Defence personnel", "Police"] },
-    { group: "Law, media & design", items: ["Lawyer", "Designer", "Media professional", "Photographer"] },
-    { group: "Aviation & marine", items: ["Pilot", "Cabin crew", "Merchant navy"] },
-    { group: "Other roles", items: ["Farmer", "Skilled professional", "Homemaker", "Student"] },
+    {
+        group: "Healthcare",
+        items: ["Doctor", "Dentist", "Nurse", "Pharmacist", "Physiotherapist", "Healthcare professional"],
+    },
+    {
+        group: "Engineering & technology",
+        items: ["Engineer", "Software developer", "IT professional", "Data / AI professional", "Architect"],
+    },
+    {
+        group: "Business & finance",
+        items: ["Business owner", "Entrepreneur", "Chartered accountant", "Accountant", "Bank employee", "Sales & marketing"],
+    },
+    {
+        group: "Education & research",
+        items: ["Teacher", "Professor", "Scientist"],
+    },
+    {
+        group: "Government & defence",
+        items: ["Government employee", "Civil services", "Defence personnel", "Police"],
+    },
+    {
+        group: "Law, media & design",
+        items: ["Lawyer", "Designer", "Media professional", "Photographer"],
+    },
+    {
+        group: "Aviation & marine",
+        items: ["Pilot", "Cabin crew", "Merchant navy"],
+    },
+    {
+        group: "Other roles",
+        items: ["Farmer", "Skilled professional", "Homemaker", "Student"],
+    },
 ];
 
 export const PARENT_OCCUPATION_SUGGESTIONS = [
@@ -265,16 +399,34 @@ export const PARTNER_RELOCATE_OPTIONS = ["Yes", "No", "Doesn't matter"];
 
 /** Hobbies = things you do. */
 export const HOBBY_GROUPS = [
-    { group: "Creative", items: ["Reading", "Writing", "Drawing & painting", "Photography", "Music", "Singing", "Dancing", "Cooking", "Baking", "Crafts & DIY"] },
-    { group: "Active & outdoors", items: ["Gym & fitness", "Running", "Yoga", "Cycling", "Swimming", "Trekking", "Badminton", "Cricket", "Football", "Travelling"] },
-    { group: "Relax & unwind", items: ["Movies & series", "Gaming", "Gardening", "Meditation", "Podcasts", "Spending time with family", "Volunteering", "Pets"] },
+    {
+        group: "Creative",
+        items: ["Reading", "Writing", "Drawing & painting", "Photography", "Music", "Singing", "Dancing", "Cooking", "Baking", "Crafts & DIY"],
+    },
+    {
+        group: "Active & outdoors",
+        items: ["Gym & fitness", "Running", "Yoga", "Cycling", "Swimming", "Trekking", "Badminton", "Cricket", "Football", "Travelling"],
+    },
+    {
+        group: "Relax & unwind",
+        items: ["Movies & series", "Gaming", "Gardening", "Meditation", "Podcasts", "Spending time with family", "Volunteering", "Pets"],
+    },
 ];
 
 /** Interests = topics you follow or care about. */
 export const INTEREST_GROUPS = [
-    { group: "Technology & business", items: ["Technology", "Startups", "Investing & finance", "Entrepreneurship", "Science"] },
-    { group: "Culture & arts", items: ["Art & design", "Books & literature", "Film & cinema", "Fashion", "History", "Food & cuisines", "Travel & cultures"] },
-    { group: "Life & values", items: ["Fitness & wellness", "Spirituality", "Family & parenting", "Social causes", "Environment", "Current affairs", "Sports", "Education"] },
+    {
+        group: "Technology & business",
+        items: ["Technology", "Startups", "Investing & finance", "Entrepreneurship", "Science"],
+    },
+    {
+        group: "Culture & arts",
+        items: ["Art & design", "Books & literature", "Film & cinema", "Fashion", "History", "Food & cuisines", "Travel & cultures"],
+    },
+    {
+        group: "Life & values",
+        items: ["Fitness & wellness", "Spirituality", "Family & parenting", "Social causes", "Environment", "Current affairs", "Sports", "Education"],
+    },
 ];
 
 /* ---- Display helpers ---- */
@@ -285,19 +437,29 @@ export function formatHeight(cm) {
     const totalInches = value / 2.54;
     let feet = Math.floor(totalInches / 12);
     let inches = Math.round(totalInches - feet * 12);
+
     if (inches === 12) {
         feet += 1;
         inches = 0;
     }
+
     return `≈ ${feet}′${inches}″`;
 }
 
-const trimZeros = (number, digits = 2) => String(Number(number.toFixed(digits)));
+const trimZeros = (number, digits = 2) =>
+    String(Number(number.toFixed(digits)));
 
 export function formatIncome(amount) {
     const value = Number(amount);
     if (!Number.isFinite(value) || value <= 0) return "";
-    if (value >= 1e7) return `₹${trimZeros(value / 1e7)} crore per year`;
-    if (value >= 1e5) return `₹${trimZeros(value / 1e5)} lakh per year`;
+
+    if (value >= 1e7) {
+        return `₹${trimZeros(value / 1e7)} crore per year`;
+    }
+
+    if (value >= 1e5) {
+        return `₹${trimZeros(value / 1e5)} lakh per year`;
+    }
+
     return `₹${value.toLocaleString("en-IN")} per year`;
 }

@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -21,6 +22,8 @@ import "./ProfileSetup.css";
 const emptyProfile = {
     profileFor: "Self",
     basic: {
+        gender: "",
+        genderDescription: "",
         birthDetails: {
             horoscopeAvailable: false,
             dosham: "Prefer not to say",
@@ -37,6 +40,7 @@ const emptyProfile = {
     family: {},
     lifestyle: {},
     partnerPreferences: {
+        preferredGenders: [],
         willingToRelocate: "Doesn't matter",
     },
     photos: {

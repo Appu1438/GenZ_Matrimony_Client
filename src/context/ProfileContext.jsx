@@ -94,6 +94,45 @@ export function ProfileProvider({ children }) {
         return result;
     }, []);
 
+    // Synchronise photo changes with the global profile state.
+    const updateProfilePhotos = useCallback((photos) => {
+        setProfile((current) => {
+            if (!current) return current;
+
+            return {
+                ...current,
+                photos,
+            };
+        });
+    }, []);
+
+    // Upload profile photo and update context immediately.
+    const uploadProfilePhoto = useCallback(async (file) => {
+        const result = await profileService.uploadProfilePhoto(file);
+
+        updateProfilePhotos(result.photos);
+
+        return result;
+    }, [updateProfilePhotos]);
+
+    // Upload gallery photo and update context immediately.
+    const uploadGalleryPhoto = useCallback(async (file) => {
+        const result = await profileService.uploadGalleryPhoto(file);
+
+        updateProfilePhotos(result.photos);
+
+        return result;
+    }, [updateProfilePhotos]);
+
+    // Delete photo and update context immediately.
+    const deleteProfilePhoto = useCallback(async (imageId) => {
+        const result = await profileService.deleteProfilePhoto(imageId);
+
+        updateProfilePhotos(result.photos);
+
+        return result;
+    }, [updateProfilePhotos]);
+
     const clearProfile = useCallback(() => {
         // Invalidate any pending profile request.
         requestId.current += 1;
@@ -135,10 +174,17 @@ export function ProfileProvider({ children }) {
         completionPercentage,
         isLoading,
         error,
+
         refreshProfile,
         saveProfile,
         submitProfile,
         clearProfile,
+
+        // Photo operations
+        updateProfilePhotos,
+        uploadProfilePhoto,
+        uploadGalleryPhoto,
+        deleteProfilePhoto,
     }), [
         profile,
         profileStatus,
@@ -149,6 +195,10 @@ export function ProfileProvider({ children }) {
         saveProfile,
         submitProfile,
         clearProfile,
+        updateProfilePhotos,
+        uploadProfilePhoto,
+        uploadGalleryPhoto,
+        deleteProfilePhoto,
     ]);
 
     return (

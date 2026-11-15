@@ -97,7 +97,7 @@
   background: var(--color-primary-tint);
   color: var(--color-primary);
   border-color: rgba(41, 82, 217, 0.10);
-  font-weight: 700;
+  /* font-weight: 700; */
 }
 
 .sidebar__item.is-active svg {
@@ -204,4 +204,32 @@
     width: auto;
     height: 3px;
   }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    scroll-behavior: smooth;
+    scroll-padding-inline: 50%;
+    scroll-snap-type: none;
+  }
+
+  .sidebar__list {
+    padding-inline: 20px;
+  }
+}
+
+.sidebar__item .sidebar__icon {
+    flex-shrink: 0;
+    color: currentColor;
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.sidebar__item:hover .sidebar__icon {
+    transform: translateX(2px);
+}
+
+.sidebar__item.is-active .sidebar__icon {
+    color: var(--color-primary);
 }

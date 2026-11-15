@@ -33,6 +33,15 @@ const VARIANTS = {
             </svg>
         ),
     },
+    approved: {
+        badge: "Approved",
+        icon: (
+            <svg {...iconProps}>
+                <circle cx="12" cy="12" r="9" {...strokeProps} />
+                <path d="m8 12 2.5 2.5L16 9" {...strokeProps} />
+            </svg>
+        ),
+    },
 };
 
 /**

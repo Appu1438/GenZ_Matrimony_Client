@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 
 import Button from "../ui/Button.jsx";
-import profileService from "../../services/profileService.js";
+import { useProfile } from "../../hooks/useProfile.js";
 import { optimizeImage, thumbnailUrl } from "../../utils/imageUtils.js";
 
 import "./ProfilePhotoUpload.css";
@@ -90,6 +90,13 @@ function ConfirmDelete({ onConfirm, onCancel, inline = false }) {
    Main component
    ========================================================================== */
 export default function ProfilePhotoUpload({ photos, onChange, disabled = false }) {
+    const {
+        uploadProfilePhoto,
+        uploadGalleryPhoto,
+        deleteProfilePhoto,
+    } = useProfile();
+
+
     const headingId = useId();
     const profileInput = useRef(null);
     const galleryInput = useRef(null);
@@ -132,8 +139,11 @@ export default function ProfilePhotoUpload({ photos, onChange, disabled = false 
             }
 
             const result = kind === "profile"
-                ? await profileService.uploadProfilePhoto(ready)
-                : await profileService.uploadGalleryPhoto(ready);
+                ? await uploadProfilePhoto(ready)
+                : await uploadGalleryPhoto(ready);
+
+            // Update the local ProfileSetup state as well.
+            onChange(result.photos);
 
             onChange(result.photos);
             return true;
@@ -216,7 +226,7 @@ export default function ProfilePhotoUpload({ photos, onChange, disabled = false 
         setDeletingId(photo.publicId);
 
         try {
-            const result = await profileService.deleteProfilePhoto(photo.publicId);
+            const result = await deleteProfilePhoto(photo.publicId);
             onChange(result.photos);
             toast.success("Photo deleted.");
             setStatus("Photo deleted.");

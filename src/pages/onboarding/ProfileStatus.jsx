@@ -83,7 +83,6 @@ export default function ProfileStatus() {
                     </Button>
                 </ProfileStatusCard>
             </AppLayout>
-
         );
     }
 
@@ -112,6 +111,35 @@ export default function ProfileStatus() {
                         onClick={() => navigate("/support")}
                     >
                         Contact support
+                    </Button>
+                </ProfileStatusCard>
+            </AppLayout>
+        );
+    }
+
+    // Approved profile
+    if (profileStatus === "approved") {
+        return (
+            <AppLayout>
+                <ProfileStatusCard
+                    variant="approved"
+                    title="Your profile has been approved!"
+                >
+                    <p>
+                        Congratulations! Your matrimony profile has been
+                        successfully reviewed and approved by our team.
+                    </p>
+
+                    <p>
+                        Your profile is now eligible to be visible to other
+                        members of GenZ Matrimony.
+                    </p>
+
+                    <Button
+                        type="button"
+                        onClick={() => navigate("/my-profile")}
+                    >
+                        View My Profile
                     </Button>
                 </ProfileStatusCard>
             </AppLayout>

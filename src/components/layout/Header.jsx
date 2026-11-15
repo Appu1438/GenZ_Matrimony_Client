@@ -1,11 +1,20 @@
 
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ChevronDown, LogOut } from "lucide-react";
+
 import Logo from "../ui/Logo.jsx";
 import useAuth from "../../hooks/useAuth.js";
+import { useProfile } from "../../hooks/useProfile.js";
+import { photoUrl } from "../../utils/imageUtils.js";
+
 import "./Header.css";
 
 export function Header() {
     const { user, logout } = useAuth();
+    const { profile } = useProfile();
+
+    const [photoFailed, setPhotoFailed] = useState(false);
 
     const initials = (user?.fullName || "GZ")
         .trim()
@@ -14,6 +23,20 @@ export function Header() {
         .slice(0, 2)
         .join("")
         .toUpperCase();
+
+    const profilePhoto = profile?.photos?.profilePhoto;
+    const profilePhotoUrl = profilePhoto?.url
+        ? photoUrl(profilePhoto.url, {
+              width: 120,
+              height: 120,
+              face: true,
+          })
+        : null;
+
+    // Reset the fallback when the profile photo changes.
+    useEffect(() => {
+        setPhotoFailed(false);
+    }, [profilePhotoUrl]);
 
     return (
         <header className="app-header">
@@ -29,43 +52,41 @@ export function Header() {
                             className="app-header__user"
                             aria-label="Account options"
                         >
-                            <span
-                                className="app-header__avatar"
-                                aria-hidden="true"
-                            >
-                                {initials || "GZ"}
+                            <span className="app-header__avatar">
+                                {profilePhotoUrl && !photoFailed ? (
+                                    <img
+                                        src={profilePhotoUrl}
+                                        alt=""
+                                        onError={() => setPhotoFailed(true)}
+                                    />
+                                ) : (
+                                    initials || "GZ"
+                                )}
                             </span>
 
                             <span className="app-header__profile-info">
                                 <span className="app-header__name">
                                     {user.fullName || "Member"}
                                 </span>
+
                                 <span className="app-header__profile-label">
                                     My account
                                 </span>
                             </span>
 
-                            <svg
+                            <ChevronDown
                                 className="app-header__chevron"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
+                                size={17}
+                                strokeWidth={1.8}
                                 aria-hidden="true"
-                            >
-                                <path
-                                    d="m7 10 5 5 5-5"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
+                            />
                         </button>
 
                         <div className="app-header__dropdown">
                             <div className="app-header__dropdown-user">
-                                <strong>{user.fullName || "Member"}</strong>
+                                <strong>
+                                    {user.fullName || "Member"}
+                                </strong>
                                 <span>{user.email}</span>
                             </div>
 
@@ -74,21 +95,11 @@ export function Header() {
                                 className="app-header__logout"
                                 onClick={logout}
                             >
-                                <svg
-                                    width="17"
-                                    height="17"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
+                                <LogOut
+                                    size={17}
+                                    strokeWidth={1.8}
                                     aria-hidden="true"
-                                >
-                                    <path
-                                        d="M10 17l5-5-5-5M15 12H3m9-8h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5"
-                                        stroke="currentColor"
-                                        strokeWidth="1.8"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
+                                />
                                 Log out
                             </button>
                         </div>

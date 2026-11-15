@@ -15,6 +15,7 @@ import Support from "./pages/common/Support.jsx";
 
 // Application pages
 import AppHome from "./pages/app/AppHome.jsx";
+import MyProfile from "./pages/profile/MyProfile.jsx";
 
 // Onboarding pages
 import ProfileSetup from "./pages/onboarding/ProfileSetup.jsx";
@@ -58,7 +59,7 @@ export function App() {
 
           {/* Approved member pages */}
           <Route path="/app" element={<AppHome />} />
-
+          <Route path="/my-profile" element={<MyProfile />} />
           {/* Future application pages */}
           {/* <Route path="/discover" element={<Discover />} /> */}
           {/* <Route path="/matches" element={<Matches />} /> */}

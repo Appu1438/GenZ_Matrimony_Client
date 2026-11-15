@@ -59,30 +59,30 @@ export default function ProfileGate() {
     }, [checkProfile]);
 
     // Automatically check for profile status changes
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (document.visibilityState === "visible") {
-                checkProfile().catch(() => { });
-            }
-        }, 30000);
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         if (document.visibilityState === "visible") {
+    //             checkProfile().catch(() => { });
+    //         }
+    //     }, 30000);
 
-        return () => clearInterval(interval);
-    }, [checkProfile]);
+    //     return () => clearInterval(interval);
+    // }, [checkProfile]);
 
     // Check when the user returns to the application
-    useEffect(() => {
-        const handleFocus = () => {
-            if (document.visibilityState === "visible") {
-                checkProfile().catch(() => { });
-            }
-        };
+    // useEffect(() => {
+    //     const handleFocus = () => {
+    //         if (document.visibilityState === "visible") {
+    //             checkProfile().catch(() => { });
+    //         }
+    //     };
 
-        window.addEventListener("focus", handleFocus);
+    //     window.addEventListener("focus", handleFocus);
 
-        return () => {
-            window.removeEventListener("focus", handleFocus);
-        };
-    }, [checkProfile]);
+    //     return () => {
+    //         window.removeEventListener("focus", handleFocus);
+    //     };
+    // }, [checkProfile]);
 
     if (!hasLoaded || isLoading || profileStatus === "unknown") {
         return <LoadingProfile />;
@@ -108,6 +108,11 @@ export default function ProfileGate() {
         return <LoadingProfile />;
     }
 
+    // Approved users can access any protected page
+    if (profileStatus === "approved") {
+        return <Outlet />;
+    }
+
     // Users who need changes can access both status and setup pages
     if (
         profileStatus === "needs_changes" &&
@@ -116,7 +121,7 @@ export default function ProfileGate() {
         return <Outlet />;
     }
 
-    // Allow users to access only their appropriate page
+    // Other users can access only their appropriate page
     if (path !== target) {
         return <Navigate to={target} replace state={{ from: location }} />;
     }

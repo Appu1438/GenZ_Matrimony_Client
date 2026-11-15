@@ -1,0 +1,1190 @@
+/* ==========================================================================
+   My Profile
+   Mobile-first. Layout rules use CONTAINER queries on .mp-page, so they react
+   to the width actually available next to the app sidebar, not the viewport.
+   Brand gradient is kept for the strength ring and the main edit button.
+
+   STICKY / PINNED PARTS
+   --mp-sticky-top is measured in MyProfile.jsx: the height of any sticky or
+   fixed app header that overlays the scrolling area (0 when the page scrolls
+   below it). That keeps the section nav, the pinned sidebar and the
+   "jump to section" landing position correct in any app shell.
+   ========================================================================== */
+
+.mp-page {
+    --mp-sticky-top: 0px; /* overwritten by MyProfile.jsx */
+    --mp-nav-height: 82px; /* 58px bar + 12px breathing room above and below */
+
+    container: mp / inline-size;
+    width: 100%;
+    min-width: 0;
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    color: var(--color-text);
+    font-family: var(--font-body);
+}
+
+.mp-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.mp-page .btn {
+    width: auto;
+    min-height: 44px;
+    padding: 0 var(--space-4);
+}
+
+.mp-page .btn > span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.mp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--space-1) var(--space-2);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.mp-link:hover {
+    background: var(--color-primary-tint);
+}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.mp-hero {
+    position: relative;
+    overflow: hidden;
+    animation: mp-rise var(--dur-slow) var(--ease-out);
+}
+
+@keyframes mp-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.mp-hero__band {
+    height: 84px;
+    background: var(--gradient-accent-soft), linear-gradient(120deg, var(--color-primary-tint), var(--color-secondary-tint));
+}
+
+.mp-hero__actions {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+}
+
+.mp-hero__body {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+    margin-top: -48px;
+    padding: 0 var(--space-5) var(--space-6);
+}
+
+/* ---- Photo gallery (main photo + up to 3 thumbnails) ---- */
+.mp-gallery {
+    display: grid;
+    gap: var(--space-2);
+    width: min(240px, 100%);
+}
+
+.mp-gallery__main {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-sunken);
+    box-shadow: 0 0 0 4px var(--color-surface), var(--shadow-lg);
+    cursor: zoom-in;
+}
+
+.mp-gallery__main img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.mp-gallery__main:hover img {
+    transform: scale(1.03);
+}
+
+.mp-gallery__main--empty {
+    display: grid;
+    place-items: center;
+    background: var(--color-primary-tint);
+    cursor: pointer;
+}
+
+.mp-gallery__initial {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.mp-gallery__pill {
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px var(--space-3);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-text) 72%, transparent);
+    color: #fff;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+}
+
+.mp-gallery__thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+}
+
+.mp-gallery__thumbs button {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-sunken);
+    cursor: zoom-in;
+}
+
+.mp-gallery__thumbs img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.mp-gallery__thumbs button:hover img {
+    transform: scale(1.06);
+}
+
+.mp-gallery__more {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--color-text) 62%, transparent);
+    color: #fff;
+    font-size: var(--fs-md);
+    font-weight: 600;
+}
+
+/* ---- Identity ---- */
+.mp-hero__info {
+    min-width: 0;
+}
+
+.mp-hero__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.mp-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: var(--color-surface-sunken);
+    color: var(--color-text-muted);
+}
+
+.mp-chip--approved { background: var(--color-success-tint); color: var(--color-success); }
+.mp-chip--pending_review { background: var(--color-primary-tint); color: var(--color-primary); }
+.mp-chip--needs_changes { background: var(--color-secondary-tint); color: var(--color-secondary); }
+.mp-chip--rejected { background: var(--color-error-tint); color: var(--color-error); }
+
+.mp-hero__name {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    font-size: clamp(1.75rem, 8cqi, var(--fs-3xl));
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+}
+
+.mp-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--color-success-tint);
+    color: var(--color-success);
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.mp-facts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3) var(--space-6);
+    margin-top: var(--space-5);
+}
+
+.mp-facts li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    font-size: var(--fs-base);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.mp-facts svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--color-primary);
+}
+
+/* ---- Profile strength meter ---- */
+.mp-meter {
+    max-width: 440px;
+    margin-top: var(--space-6);
+}
+
+.mp-meter__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+}
+
+.mp-meter__head strong {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+.mp-meter__track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-sunken);
+}
+
+.mp-meter__track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-primary);
+    transition: width var(--dur-slow) var(--ease-out);
+}
+
+.mp-meter__updated {
+    margin-top: var(--space-2);
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+}
+
+/* ---- "Looking for" strip ---- */
+.mp-looking {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface-sunken);
+}
+
+.mp-looking__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-secondary);
+}
+
+.mp-looking__list {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    order: 3;
+}
+
+.mp-looking__list li {
+    display: inline-flex;
+    gap: 6px;
+    padding: 6px var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+
+.mp-looking__list li span {
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+
+.mp-looking .mp-link {
+    margin-left: auto;
+}
+
+/* ==========================================================================
+   Layout (single column by default)
+   ========================================================================== */
+.mp-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: start;
+}
+
+.mp-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    min-width: 0;
+}
+
+.mp-aside {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+}
+
+/* ==========================================================================
+   Section navigation
+   Sticky band hides content scrolling behind it; the bar inside is a card.
+   ========================================================================== */
+.mp-nav {
+    position: sticky;
+    top: var(--mp-sticky-top);
+    z-index: 5; /* above page content, below the app header and the photo viewer */
+    /* Cancel the band padding at rest so spacing matches the other gaps. */
+    margin-block: calc(var(--space-3) * -1);
+    padding-block: var(--space-3);
+    background: var(--color-bg);
+}
+
+.mp-nav__bar {
+    position: relative;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--dur-base) var(--ease-out);
+}
+
+/* Lift the bar a little once it is pinned. */
+.mp-nav.is-stuck .mp-nav__bar {
+    box-shadow: var(--shadow-md);
+}
+
+/* Edge fades: only shown when more tabs are hidden on that side. */
+.mp-nav__bar::before,
+.mp-nav__bar::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    z-index: 1;
+    width: 28px;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.mp-nav__bar::before {
+    left: 1px;
+    background: linear-gradient(to right, var(--color-surface), transparent);
+}
+
+.mp-nav__bar::after {
+    right: 1px;
+    background: linear-gradient(to left, var(--color-surface), transparent);
+}
+
+.mp-nav__bar.has-start::before,
+.mp-nav__bar.has-end::after {
+    opacity: 1;
+}
+
+/* Equal-width tabs when there is room; natural width + scroll when there isn't. */
+.mp-nav__list {
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(max-content, 1fr);
+    gap: var(--space-1);
+    padding: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+}
+
+.mp-nav__list::-webkit-scrollbar {
+    display: none;
+}
+
+.mp-nav__tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+/* Icons only where there is room for them. */
+.mp-nav__tab svg {
+    display: none;
+}
+
+.mp-nav__tab:hover {
+    background: var(--color-surface-sunken);
+    color: var(--color-text);
+}
+
+.mp-nav__tab.is-active {
+    background: var(--color-primary-tint);
+    color: var(--color-primary);
+}
+
+/* The list clips overflow, so keep the focus ring inside the tab. */
+.mp-nav__tab:focus-visible {
+    outline-offset: -2px;
+}
+
+/* ==========================================================================
+   Sections
+   ========================================================================== */
+.mp-section {
+    padding: var(--space-5);
+    scroll-margin-top: calc(var(--mp-sticky-top) + var(--mp-nav-height) + var(--space-2));
+}
+
+.mp-section__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+}
+
+.mp-section__icon {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-tint);
+    color: var(--color-primary);
+}
+
+.mp-section__heading {
+    flex: 1;
+    min-width: 0;
+}
+
+.mp-section__heading h2 {
+    font-size: var(--fs-lg);
+}
+
+.mp-section__heading p {
+    margin-top: 2px;
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+}
+
+.mp-group + .mp-group {
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+}
+
+.mp-group__title {
+    margin-bottom: var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.mp-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4) var(--space-8);
+    margin: 0;
+}
+
+.mp-detail {
+    min-width: 0;
+}
+
+.mp-detail dt {
+    margin-bottom: 3px;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.mp-detail dd {
+    margin: 0;
+    font-size: var(--fs-base);
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* ---- About ---- */
+.mp-about {
+    font-size: var(--fs-md);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.mp-callout {
+    margin-top: var(--space-6);
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-sunken);
+}
+
+.mp-callout h3 {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-secondary);
+}
+
+.mp-callout p {
+    font-size: var(--fs-sm);
+    line-height: 1.75;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* ---- Tags ---- */
+.mp-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.mp-tag {
+    padding: 7px var(--space-4);
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+
+.mp-tag--blue {
+    background: var(--color-primary-tint);
+    color: var(--color-primary);
+}
+
+.mp-tag--violet {
+    background: var(--color-secondary-tint);
+    color: var(--color-secondary);
+}
+
+/* ---- Partner preferences ---- */
+.mp-pref-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--space-3);
+    margin: 0 0 var(--space-6);
+}
+
+.mp-pref-stats div {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-sunken);
+}
+
+.mp-pref-stats dt {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.mp-pref-stats dd {
+    margin: 4px 0 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.mp-pref-row + .mp-pref-row {
+    margin-top: var(--space-4);
+}
+
+.mp-pref-row__label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.mp-open {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: var(--space-4);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+.mp-open svg {
+    flex: none;
+    margin-top: 3px;
+    color: var(--color-success);
+}
+
+.mp-pref-row + .mp-open {
+    margin-top: var(--space-5);
+}
+
+/* ---- Photos ---- */
+.mp-photos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+}
+
+.mp-photos li {
+    aspect-ratio: 1;
+    min-width: 0;
+}
+
+.mp-photos li.is-featured {
+    grid-column: span 2;
+    aspect-ratio: 4 / 3;
+}
+
+.mp-photos button {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-sunken);
+    cursor: zoom-in;
+}
+
+.mp-photos img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.mp-photos button:hover img {
+    transform: scale(1.05);
+}
+
+.mp-photos__label {
+    position: absolute;
+    left: var(--space-3);
+    bottom: var(--space-3);
+    padding: 5px var(--space-3);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-text) 72%, transparent);
+    color: #fff;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+}
+
+.mp-photos__expand {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-text) 72%, transparent);
+    color: #fff;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.mp-photos button:hover .mp-photos__expand,
+.mp-photos button:focus-visible .mp-photos__expand {
+    opacity: 1;
+}
+
+/* ---- Empty hint ---- */
+.mp-empty {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1.5px dashed var(--color-border-strong);
+    border-radius: var(--radius-md);
+}
+
+.mp-empty p {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Sidebar cards
+   ========================================================================== */
+.mp-aside-card {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-5);
+}
+
+.mp-aside-card h2 {
+    font-size: var(--fs-md);
+}
+
+.mp-strength {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+}
+
+.mp-ring {
+    position: relative;
+    flex: none;
+    width: 96px;
+    height: 96px;
+}
+
+.mp-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.mp-ring circle {
+    fill: none;
+    stroke-width: 9;
+}
+
+.mp-ring__track {
+    stroke: var(--color-surface-sunken);
+}
+
+.mp-ring__value {
+    stroke-linecap: round;
+    transition: stroke-dashoffset var(--dur-slow) var(--ease-out);
+}
+
+.mp-ring strong {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+}
+
+.mp-strength__label {
+    margin-top: 2px;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.mp-checklist {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.mp-checklist li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.mp-checklist li.is-done {
+    color: var(--color-text-muted);
+}
+
+.mp-checklist__mark {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--color-border-strong);
+    border-radius: 50%;
+    color: #fff;
+}
+
+.mp-checklist li.is-done .mp-checklist__mark {
+    border-color: var(--color-success);
+    background: var(--color-success);
+}
+
+/* ---- Status card (tokens swapped per status) ---- */
+.mp-status {
+    --status-color: var(--color-primary);
+    --status-tint: var(--color-primary-tint);
+}
+
+.mp-status--approved { --status-color: var(--color-success); --status-tint: var(--color-success-tint); }
+.mp-status--needs_changes { --status-color: var(--color-secondary); --status-tint: var(--color-secondary-tint); }
+.mp-status--rejected { --status-color: var(--color-error); --status-tint: var(--color-error-tint); }
+.mp-status--draft,
+.mp-status--not_created { --status-color: var(--color-text-muted); --status-tint: var(--color-surface-sunken); }
+
+.mp-status__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.mp-status__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--status-tint);
+    color: var(--status-color);
+}
+
+.mp-status__eyebrow {
+    display: block;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.mp-status > p {
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--color-text-muted);
+}
+
+.mp-status__note {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-sunken);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+}
+
+.mp-status__note span {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--status-color);
+}
+
+.mp-status__link {
+    color: var(--color-primary);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Loading + empty / error states
+   ========================================================================== */
+.mp-skeleton {
+    border-radius: var(--radius-sm);
+    background: linear-gradient(100deg, var(--color-surface-sunken) 30%, var(--color-border) 50%, var(--color-surface-sunken) 70%);
+    background-size: 200% 100%;
+    animation: mp-shimmer 1.4s linear infinite;
+}
+
+@keyframes mp-shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+}
+
+.mp-skeleton-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+    padding: var(--space-5);
+}
+
+.mp-skeleton--photo {
+    width: min(240px, 100%);
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+}
+
+.mp-skeleton-lines {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+}
+
+.mp-skeleton-card {
+    padding: var(--space-5);
+}
+
+.mp-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    min-height: 55vh;
+    padding: var(--space-8);
+    text-align: center;
+}
+
+.mp-state__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--space-2);
+    border-radius: 50%;
+    background: var(--color-primary-tint);
+    color: var(--color-primary);
+}
+
+.mp-state p {
+    max-width: 38ch;
+    margin-bottom: var(--space-3);
+    color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   >= 560px of available width
+   ========================================================================== */
+@container mp (min-width: 560px) {
+    .mp-facts,
+    .mp-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mp-photos {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mp-photos li.is-featured {
+        grid-column: span 2;
+        grid-row: span 2;
+        aspect-ratio: 1;
+    }
+
+    .mp-looking {
+        flex-wrap: nowrap;
+    }
+
+    .mp-looking__list {
+        flex: 1;
+        order: 0;
+    }
+
+    .mp-looking .mp-link {
+        margin-left: 0;
+    }
+}
+
+/* ==========================================================================
+   >= 720px: roomy hero, labelled tabs with icons, side-by-side sidebar cards
+   ========================================================================== */
+@container mp (min-width: 720px) {
+    .mp-hero__band {
+        height: 112px;
+    }
+
+    .mp-hero__actions {
+        top: var(--space-5);
+        right: var(--space-6);
+    }
+
+    .mp-hero__body {
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: var(--space-8);
+        margin-top: -64px;
+        padding: 0 var(--space-8) var(--space-8);
+    }
+
+    .mp-gallery {
+        width: 100%;
+    }
+
+    .mp-hero__info {
+        padding-top: 80px;
+    }
+
+    .mp-looking {
+        padding: var(--space-4) var(--space-8);
+    }
+
+    .mp-nav__tab svg {
+        display: block;
+    }
+
+    .mp-section {
+        padding: var(--space-8);
+    }
+
+    .mp-section__header {
+        gap: var(--space-4);
+        margin-bottom: var(--space-6);
+    }
+
+    .mp-section__icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .mp-aside {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mp-aside-card {
+        padding: var(--space-6);
+    }
+
+    .mp-skeleton-hero {
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: var(--space-8);
+        padding: var(--space-8);
+    }
+
+    .mp-skeleton-lines {
+        padding-top: var(--space-6);
+    }
+
+    .mp-skeleton--photo {
+        width: 100%;
+    }
+
+    .mp-skeleton-card {
+        padding: var(--space-8);
+    }
+}
+
+/* ==========================================================================
+   >= 940px: main column + sidebar
+   ========================================================================== */
+@container mp (min-width: 940px) {
+    .mp-layout {
+        grid-template-columns: minmax(0, 1fr) 300px;
+    }
+
+    .mp-aside {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ==========================================================================
+   Sidebar pinning
+   MyProfile.jsx adds .is-pinned only when the whole sidebar fits in view next
+   to the main column. It never scrolls inside itself and is never cut off.
+   ========================================================================== */
+.mp-aside.is-pinned {
+    position: sticky;
+    top: calc(var(--mp-sticky-top) + var(--space-3));
+}
+
+/* ==========================================================================
+   Safety net
+   ========================================================================== */
+.mp-layout,
+.mp-main,
+.mp-section {
+    min-width: 0;
+}
+
+.mp-page img {
+    max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mp-page *,
+    .mp-page *::before,
+    .mp-page *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
