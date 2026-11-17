@@ -17,14 +17,36 @@ export const ProfileContext = createContext(null);
 export function ProfileProvider({ children }) {
     const auth = useContext(AuthContext);
 
+    // =========================================================
+    // Active Profile State
+    // =========================================================
+
     const [profile, setProfile] = useState(null);
     const [profileStatus, setProfileStatus] = useState("unknown");
     const [completionPercentage, setCompletionPercentage] = useState(0);
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
+    // =========================================================
+    // Profile Revision State
+    // =========================================================
+
+    const [revision, setRevision] = useState(null);
+    const [revisionStatus, setRevisionStatus] = useState("unknown");
+    const [revisionCompletionPercentage, setRevisionCompletionPercentage] =
+        useState(0);
+
+    const [isRevisionLoading, setIsRevisionLoading] = useState(false);
+    const [revisionError, setRevisionError] = useState("");
+
     // Prevent older requests from overwriting newer results.
     const requestId = useRef(0);
+    const revisionRequestId = useRef(0);
+
+    // =========================================================
+    // Active Profile Operations
+    // =========================================================
 
     const refreshProfile = useCallback(async () => {
         const currentRequestId = ++requestId.current;
@@ -35,13 +57,13 @@ export function ProfileProvider({ children }) {
         try {
             const result = await profileService.getMyProfile();
 
-            // Ignore outdated requests.
             if (currentRequestId !== requestId.current) {
                 return result;
             }
 
             setProfile(result?.profile || null);
             setProfileStatus(result?.status || "not_created");
+
             setCompletionPercentage(
                 result?.completionPercentage || 0
             );
@@ -49,11 +71,10 @@ export function ProfileProvider({ children }) {
             return result;
         } catch (err) {
             if (currentRequestId === requestId.current) {
-                const message =
+                setError(
                     err.response?.data?.message ||
-                    "Unable to load your profile.";
-
-                setError(message);
+                    "Unable to load your profile."
+                );
             }
 
             throw err;
@@ -70,6 +91,7 @@ export function ProfileProvider({ children }) {
 
         setProfile(payload.profile || null);
         setProfileStatus(payload.status || "not_created");
+
         setCompletionPercentage(
             payload.completionPercentage || 0
         );
@@ -85,6 +107,7 @@ export function ProfileProvider({ children }) {
 
         setProfile(payload.profile || null);
         setProfileStatus(payload.status || "not_created");
+
         setCompletionPercentage(
             payload.completionPercentage || 0
         );
@@ -94,7 +117,93 @@ export function ProfileProvider({ children }) {
         return result;
     }, []);
 
-    // Synchronise photo changes with the global profile state.
+    // =========================================================
+    // Profile Revision Operations
+    // =========================================================
+
+    const refreshRevision = useCallback(async () => {
+        const currentRequestId = ++revisionRequestId.current;
+
+        setIsRevisionLoading(true);
+        setRevisionError("");
+
+        try {
+            const result = await profileService.getMyRevision();
+
+            if (currentRequestId !== revisionRequestId.current) {
+                return result;
+            }
+
+            setRevision(result?.revision || null);
+            setRevisionStatus(result?.status || "not_created");
+
+            setRevisionCompletionPercentage(
+                result?.completionPercentage || 0
+            );
+
+            return result;
+        } catch (err) {
+            if (currentRequestId === revisionRequestId.current) {
+                setRevisionError(
+                    err.response?.data?.message ||
+                    "Unable to load your profile changes."
+                );
+            }
+
+            throw err;
+        } finally {
+            if (currentRequestId === revisionRequestId.current) {
+                setIsRevisionLoading(false);
+            }
+        }
+    }, []);
+
+    const saveRevision = useCallback(async (data) => {
+        const result = await profileService.saveMyRevision(data);
+        const payload = result.data;
+
+        setRevision(payload.revision || null);
+        setRevisionStatus(payload.status || "draft");
+
+        setRevisionCompletionPercentage(
+            payload.completionPercentage || 0
+        );
+
+        setRevisionError("");
+
+        return result;
+    }, []);
+
+    const submitRevision = useCallback(async () => {
+        const result = await profileService.submitMyRevision();
+        const payload = result.data;
+
+        setRevision(payload.revision || null);
+        setRevisionStatus(payload.status || "pending_review");
+
+        setRevisionCompletionPercentage(
+            payload.completionPercentage || 0
+        );
+
+        setRevisionError("");
+
+        return result;
+    }, []);
+
+    const clearRevision = useCallback(() => {
+        revisionRequestId.current += 1;
+
+        setRevision(null);
+        setRevisionStatus("unknown");
+        setRevisionCompletionPercentage(0);
+        setIsRevisionLoading(false);
+        setRevisionError("");
+    }, []);
+
+    // =========================================================
+    // Active Profile Photo Operations
+    // =========================================================
+
     const updateProfilePhotos = useCallback((photos) => {
         setProfile((current) => {
             if (!current) return current;
@@ -106,7 +215,6 @@ export function ProfileProvider({ children }) {
         });
     }, []);
 
-    // Upload profile photo and update context immediately.
     const uploadProfilePhoto = useCallback(async (file) => {
         const result = await profileService.uploadProfilePhoto(file);
 
@@ -115,7 +223,6 @@ export function ProfileProvider({ children }) {
         return result;
     }, [updateProfilePhotos]);
 
-    // Upload gallery photo and update context immediately.
     const uploadGalleryPhoto = useCallback(async (file) => {
         const result = await profileService.uploadGalleryPhoto(file);
 
@@ -124,7 +231,6 @@ export function ProfileProvider({ children }) {
         return result;
     }, [updateProfilePhotos]);
 
-    // Delete photo and update context immediately.
     const deleteProfilePhoto = useCallback(async (imageId) => {
         const result = await profileService.deleteProfilePhoto(imageId);
 
@@ -133,19 +239,93 @@ export function ProfileProvider({ children }) {
         return result;
     }, [updateProfilePhotos]);
 
+    // =========================================================
+    // Revision Photo Operations
+    // =========================================================
+
+    const updateRevisionFromPhotoResult = useCallback((result) => {
+        // The backend may create the first revision during photo upload.
+        // Prefer the complete revision returned by the backend.
+        if (result?.revision) {
+            setRevision(result.revision);
+
+            setRevisionStatus(
+                result.revision.status || "draft"
+            );
+
+            setRevisionCompletionPercentage(
+                result.revision.completionPercentage || 0
+            );
+
+            setRevisionError("");
+
+            return;
+        }
+
+        // Fallback: update only the photo data on an existing revision.
+        if (result?.photos) {
+            setRevision((current) => {
+                if (!current) return current;
+
+                return {
+                    ...current,
+                    profileData: {
+                        ...(current.profileData || {}),
+                        photos: result.photos,
+                    },
+                };
+            });
+        }
+    }, []);
+
+    const uploadRevisionProfilePhoto = useCallback(async (file) => {
+        const result =
+            await profileService.uploadRevisionProfilePhoto(file);
+
+        updateRevisionFromPhotoResult(result);
+
+        return result;
+    }, [updateRevisionFromPhotoResult]);
+
+    const uploadRevisionGalleryPhoto = useCallback(async (file) => {
+        const result =
+            await profileService.uploadRevisionGalleryPhoto(file);
+
+        updateRevisionFromPhotoResult(result);
+
+        return result;
+    }, [updateRevisionFromPhotoResult]);
+
+    const deleteRevisionPhoto = useCallback(async (imageId) => {
+        const result =
+            await profileService.deleteRevisionPhoto(imageId);
+
+        updateRevisionFromPhotoResult(result);
+
+        return result;
+    }, [updateRevisionFromPhotoResult]);
+
+    // =========================================================
+    // Clear Profile Data
+    // =========================================================
+
     const clearProfile = useCallback(() => {
-        // Invalidate any pending profile request.
         requestId.current += 1;
 
         setProfile(null);
         setProfileStatus("unknown");
         setCompletionPercentage(0);
+
         setIsLoading(false);
         setError("");
-    }, []);
 
-    // Automatically load the profile after authentication
-    // has been restored, including after a browser refresh.
+        clearRevision();
+    }, [clearRevision]);
+
+    // =========================================================
+    // Authentication Synchronisation
+    // =========================================================
+
     useEffect(() => {
         if (auth?.status === "loading") {
             return;
@@ -160,15 +340,25 @@ export function ProfileProvider({ children }) {
             refreshProfile().catch(() => {
                 // Error is already stored in context.
             });
+
+            refreshRevision().catch(() => {
+                // Error is already stored in context.
+            });
         }
     }, [
         auth?.status,
         auth?.user?._id,
         refreshProfile,
+        refreshRevision,
         clearProfile,
     ]);
 
+    // =========================================================
+    // Context Value
+    // =========================================================
+
     const value = useMemo(() => ({
+        // Active profile
         profile,
         profileStatus,
         completionPercentage,
@@ -180,25 +370,60 @@ export function ProfileProvider({ children }) {
         submitProfile,
         clearProfile,
 
-        // Photo operations
+        // Revision
+        revision,
+        revisionStatus,
+        revisionCompletionPercentage,
+        isRevisionLoading,
+        revisionError,
+
+        refreshRevision,
+        saveRevision,
+        submitRevision,
+        clearRevision,
+
+        // Active profile photos
         updateProfilePhotos,
         uploadProfilePhoto,
         uploadGalleryPhoto,
         deleteProfilePhoto,
+
+        // Revision photos
+        uploadRevisionProfilePhoto,
+        uploadRevisionGalleryPhoto,
+        deleteRevisionPhoto,
+
     }), [
         profile,
         profileStatus,
         completionPercentage,
         isLoading,
         error,
+
         refreshProfile,
         saveProfile,
         submitProfile,
         clearProfile,
+
+        revision,
+        revisionStatus,
+        revisionCompletionPercentage,
+        isRevisionLoading,
+        revisionError,
+
+        refreshRevision,
+        saveRevision,
+        submitRevision,
+        clearRevision,
+
         updateProfilePhotos,
         uploadProfilePhoto,
         uploadGalleryPhoto,
         deleteProfilePhoto,
+
+        uploadRevisionProfilePhoto,
+        uploadRevisionGalleryPhoto,
+        deleteRevisionPhoto,
     ]);
 
     return (

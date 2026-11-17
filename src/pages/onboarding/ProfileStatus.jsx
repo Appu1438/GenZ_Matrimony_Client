@@ -14,9 +14,17 @@ export default function ProfileStatus() {
         profileStatus,
         refreshProfile,
         isLoading,
+
+        revision,
+        revisionStatus,
+        refreshRevision,
+        isRevisionLoading,
     } = useProfile();
 
-    // Pending review
+    // =========================================================
+    // Initial Profile Pending Review
+    // =========================================================
+
     if (profileStatus === "pending_review") {
         return (
             <AppLayout>
@@ -55,7 +63,10 @@ export default function ProfileStatus() {
         );
     }
 
-    // Changes requested by admin
+    // =========================================================
+    // Initial Profile Needs Changes
+    // =========================================================
+
     if (profileStatus === "needs_changes") {
         return (
             <AppLayout>
@@ -86,7 +97,10 @@ export default function ProfileStatus() {
         );
     }
 
-    // Rejected profile
+    // =========================================================
+    // Initial Profile Rejected
+    // =========================================================
+
     if (profileStatus === "rejected") {
         return (
             <AppLayout>
@@ -117,7 +131,146 @@ export default function ProfileStatus() {
         );
     }
 
-    // Approved profile
+    // =========================================================
+    // Approved Profile — Revision Pending Review
+    // =========================================================
+
+    if (
+        profileStatus === "approved" &&
+        revisionStatus === "pending_review"
+    ) {
+        return (
+            <AppLayout>
+                <ProfileStatusCard
+                    variant="pending"
+                    title="Your profile changes are under review"
+                >
+                    <p>
+                        Your original approved profile remains active and visible
+                        while our team reviews your latest changes.
+                    </p>
+
+                    {revision?.submittedAt && (
+                        <p className="profile-status-meta">
+                            Changes submitted on{" "}
+                            {new Date(revision.submittedAt).toLocaleDateString()}
+                        </p>
+                    )}
+
+                    <ol className="profile-status-track" aria-label="Revision review progress">
+                        <li className="is-done">Changes submitted</li>
+                        <li className="is-current">Review by our team</li>
+                        <li>Changes approved</li>
+                    </ol>
+
+                    <Button
+                        type="button"
+                        onClick={refreshRevision}
+                        isLoading={isRevisionLoading}
+                        loadingText="Checking..."
+                    >
+                        Refresh revision status
+                    </Button>
+
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => navigate("/my-profile")}
+                    >
+                        View approved profile
+                    </Button>
+                </ProfileStatusCard>
+            </AppLayout>
+        );
+    }
+
+    // =========================================================
+    // Approved Profile — Revision Needs Changes
+    // =========================================================
+
+    if (
+        profileStatus === "approved" &&
+        revisionStatus === "needs_changes"
+    ) {
+        return (
+            <AppLayout>
+                <ProfileStatusCard
+                    variant="needs-changes"
+                    title="Changes requested for your profile"
+                >
+                    <p>
+                        Your existing approved profile is still active.
+                        Our team has requested some changes to your proposed update.
+                    </p>
+
+                    {revision?.reviewNote && (
+                        <blockquote className="profile-status-note">
+                            <span>Note from our team</span>
+                            {revision.reviewNote}
+                        </blockquote>
+                    )}
+
+                    <Button
+                        type="button"
+                        onClick={() => navigate("/profile-setup?mode=edit")}
+                    >
+                        Update my changes
+                    </Button>
+
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => navigate("/my-profile")}
+                    >
+                        View approved profile
+                    </Button>
+                </ProfileStatusCard>
+            </AppLayout>
+        );
+    }
+
+    // =========================================================
+    // Approved Profile — Revision Draft
+    // =========================================================
+
+    if (
+        profileStatus === "approved" &&
+        revisionStatus === "draft"
+    ) {
+        return (
+            <AppLayout>
+                <ProfileStatusCard
+                    variant="approved"
+                    title="Your approved profile is active"
+                >
+                    <p>
+                        You have an unfinished profile update.
+                        Continue editing whenever you're ready.
+                    </p>
+
+                    <Button
+                        type="button"
+                        onClick={() => navigate("/profile-setup?mode=edit")}
+                    >
+                        Continue editing
+                    </Button>
+
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => navigate("/my-profile")}
+                    >
+                        View My Profile
+                    </Button>
+                </ProfileStatusCard>
+            </AppLayout>
+        );
+    }
+
+    // =========================================================
+    // Approved Profile — No Pending Revision
+    // =========================================================
+
     if (profileStatus === "approved") {
         return (
             <AppLayout>

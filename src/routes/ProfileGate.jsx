@@ -58,32 +58,7 @@ export default function ProfileGate() {
         };
     }, [checkProfile]);
 
-    // Automatically check for profile status changes
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         if (document.visibilityState === "visible") {
-    //             checkProfile().catch(() => { });
-    //         }
-    //     }, 30000);
-
-    //     return () => clearInterval(interval);
-    // }, [checkProfile]);
-
-    // Check when the user returns to the application
-    // useEffect(() => {
-    //     const handleFocus = () => {
-    //         if (document.visibilityState === "visible") {
-    //             checkProfile().catch(() => { });
-    //         }
-    //     };
-
-    //     window.addEventListener("focus", handleFocus);
-
-    //     return () => {
-    //         window.removeEventListener("focus", handleFocus);
-    //     };
-    // }, [checkProfile]);
-
+    
     if (!hasLoaded || isLoading || profileStatus === "unknown") {
         return <LoadingProfile />;
     }
@@ -109,7 +84,18 @@ export default function ProfileGate() {
     }
 
     // Approved users can access any protected page
+    // Approved users can access protected pages,
+    // but profile setup is allowed only in edit mode.
     if (profileStatus === "approved") {
+        const isProfileSetup = path === PROFILE_ROUTES.setup;
+
+        const searchParams = new URLSearchParams(location.search);
+        const isEditMode = searchParams.get("mode") === "edit";
+
+        if (isProfileSetup && !isEditMode) {
+            return <Navigate to={PROFILE_ROUTES.app} replace />;
+        }
+
         return <Outlet />;
     }
 

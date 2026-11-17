@@ -1,6 +1,10 @@
 
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import {
+    Navigate,
+    useNavigate,
+    useSearchParams,
+} from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 
@@ -18,6 +22,7 @@ import {
 } from "./steps.jsx";
 
 import "./ProfileSetup.css";
+import { hasProfileChanges } from "../../utils/profileUtils.js";
 
 const emptyProfile = {
     profileFor: "Self",
@@ -265,20 +270,77 @@ function CheckIcon() {
 
 export default function ProfileSetup() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    const isEditMode = searchParams.get("mode") === "edit";
 
     const {
         profile,
         profileStatus,
         saveProfile,
         submitProfile,
+        isLoading,
+
+        revision,
+        revisionStatus,
+        saveRevision,
+        submitRevision,
+        isRevisionLoading,
+        revisionError,
+        refreshRevision,
     } = useProfile();
 
     const [values, setValues] = useState(emptyProfile);
     const [step, setStep] = useState(0);
     const [saving, setSaving] = useState(false);
     const [invalid, setInvalid] = useState({});
+    const [formInitialized, setFormInitialized] = useState(false);
+
+    // =========================================================
+    // Initialize Form Data
+    // =========================================================
+
 
     useEffect(() => {
+        // Initialize only once. Saving a revision or uploading a photo
+        // updates context, but must not overwrite the user's current form.
+        if (formInitialized) return;
+
+        if (isEditMode) {
+            if (
+                revisionStatus === "unknown" ||
+                isRevisionLoading
+            ) {
+                return;
+            }
+
+            if (revisionError) {
+                return;
+            }
+
+            const source = revision?.profileData || profile;
+
+            if (!source) return;
+
+            setValues(
+                mergeProfileData(emptyProfile, source)
+            );
+
+            setStep(
+                Math.min(
+                    PROFILE_STEPS.length - 1,
+                    Math.max(
+                        0,
+                        Number(source.currentStep) || 0
+                    )
+                )
+            );
+
+            setFormInitialized(true);
+
+            return;
+        }
+
         if (profile) {
             setValues(
                 mergeProfileData(emptyProfile, profile)
@@ -293,10 +355,23 @@ export default function ProfileSetup() {
                     )
                 )
             );
-        }
-    }, [profile]);
 
-    // Bring the first problem field into view and focus it.
+            setFormInitialized(true);
+        }
+    }, [
+        isEditMode,
+        profile,
+        revision,
+        revisionStatus,
+        isRevisionLoading,
+        revisionError,
+        formInitialized,
+    ]);
+
+    // =========================================================
+    // Bring First Invalid Field Into View
+    // =========================================================
+
     useEffect(() => {
         const [first] = Object.keys(invalid);
 
@@ -316,6 +391,10 @@ export default function ProfileSetup() {
             ?.focus({ preventScroll: true });
     }, [invalid]);
 
+    // =========================================================
+    // Progress
+    // =========================================================
+
     const progress = useMemo(
         () =>
             Math.round(
@@ -324,21 +403,107 @@ export default function ProfileSetup() {
         [step]
     );
 
+    // =========================================================
+    // Loading and Access Protection
+    // =========================================================
+
+    if (isLoading && profileStatus === "unknown") {
+        return (
+            <AppLayout>
+                <div className="profile-setup-page">
+                    <p>Loading your profile...</p>
+                </div>
+            </AppLayout>
+        );
+    }
+
     if (
-        profileStatus === "pending_review" ||
-        profileStatus === "rejected"
+        !isEditMode &&
+        (
+            profileStatus === "pending_review" ||
+            profileStatus === "rejected"
+        )
     ) {
         return (
             <Navigate
                 to={
                     profileStatus === "pending_review"
-                        ? "/profile-pending"
-                        : "/profile-rejected"
+                        ? "/profile-status"
+                        : "/profile-status"
                 }
                 replace
             />
         );
     }
+
+    if (
+        isEditMode &&
+        profileStatus !== "approved" &&
+        profileStatus !== "unknown"
+    ) {
+        return <Navigate to="/profile-setup" replace />;
+    }
+
+    if (
+        isEditMode &&
+        revisionStatus === "pending_review"
+    ) {
+        return <Navigate to="/profile-status" replace />;
+    }
+
+    if (
+        isEditMode &&
+        (
+            profileStatus === "unknown" ||
+            revisionStatus === "unknown" ||
+            isLoading ||
+            isRevisionLoading
+        )
+    ) {
+        return (
+            <AppLayout>
+                <div className="profile-setup-page">
+                    <p>Loading your profile changes...</p>
+                </div>
+            </AppLayout>
+        );
+    }
+
+    if (isEditMode && revisionError && !revision) {
+        return (
+            <AppLayout>
+                <div className="profile-setup-page">
+                    <h2>Unable to load profile changes</h2>
+
+                    <p>{revisionError}</p>
+
+                    <Button
+                        onClick={() =>
+                            refreshRevision().catch(() => { })
+                        }
+                        isLoading={isRevisionLoading}
+                        loadingText="Loading..."
+                    >
+                        Try again
+                    </Button>
+                </div>
+            </AppLayout>
+        );
+    }
+
+    if (!formInitialized) {
+        return (
+            <AppLayout>
+                <div className="profile-setup-page">
+                    <p>Preparing your profile...</p>
+                </div>
+            </AppLayout>
+        );
+    }
+
+    // =========================================================
+    // Field Change
+    // =========================================================
 
     function handleFieldChange(path, value) {
         setValues((current) =>
@@ -355,18 +520,28 @@ export default function ProfileSetup() {
         });
     }
 
+    // =========================================================
+    // Save Current Step
+    // =========================================================
+
     async function saveCurrentStep(nextStep = step) {
         setSaving(true);
 
         try {
-            // Photos are saved through the dedicated upload endpoints.
+            // Photos are handled through dedicated endpoints.
             const profileData = { ...values };
             delete profileData.photos;
 
-            await saveProfile({
+            const payload = {
                 ...profileData,
                 currentStep: nextStep,
-            });
+            };
+
+            if (isEditMode) {
+                await saveRevision(payload);
+            } else {
+                await saveProfile(payload);
+            }
 
             return true;
         } catch (error) {
@@ -380,6 +555,10 @@ export default function ProfileSetup() {
             setSaving(false);
         }
     }
+
+    // =========================================================
+    // Next Step
+    // =========================================================
 
     async function handleNext() {
         const errors = validateStep(step, values);
@@ -401,6 +580,10 @@ export default function ProfileSetup() {
         }
     }
 
+    // =========================================================
+    // Previous Step
+    // =========================================================
+
     async function handleBack() {
         if (step === 0) return;
 
@@ -411,6 +594,10 @@ export default function ProfileSetup() {
             setStep(previousStep);
         }
     }
+
+    // =========================================================
+    // Submit Profile / Revision
+    // =========================================================
 
     async function handleSubmit() {
         const failing = PROFILE_STEPS
@@ -429,27 +616,56 @@ export default function ProfileSetup() {
             return;
         }
 
+        if (isEditMode && !hasProfileChanges(values, profile)) {
+            toast("No changes detected. Your profile is already up to date.", {
+                icon: "ℹ️",
+            });
+            // navigate("/app", {
+            //     replace: true,
+            // });
+
+            return;
+        }
+
         setSaving(true);
 
         try {
-            // Photos are already stored through the photo endpoints.
+            // Photos are handled separately.
             const profileData = { ...values };
             delete profileData.photos;
 
-            await saveProfile({
+            const payload = {
                 ...profileData,
                 currentStep: PROFILE_STEPS.length - 1,
-            });
+            };
 
-            await submitProfile();
+            if (isEditMode) {
+                // Save proposed changes separately.
+                await saveRevision(payload);
 
-            toast.success(
-                "Your profile has been submitted for review."
-            );
+                // Submit only the revision for admin review.
+                await submitRevision();
 
-            navigate("/profile-pending", {
-                replace: true,
-            });
+                toast.success(
+                    "Your profile changes have been submitted for review."
+                );
+
+                navigate("/profile-status", {
+                    replace: true,
+                });
+            } else {
+                // Original profile creation flow.
+                await saveProfile(payload);
+                await submitProfile();
+
+                toast.success(
+                    "Your profile has been submitted for review."
+                );
+
+                navigate("/profile-pending", {
+                    replace: true,
+                });
+            }
         } catch (error) {
             toast.error(
                 error.response?.data?.message ||
@@ -459,6 +675,10 @@ export default function ProfileSetup() {
             setSaving(false);
         }
     }
+
+    // =========================================================
+    // Render
+    // =========================================================
 
     const isLastStep =
         step === PROFILE_STEPS.length - 1;
@@ -471,11 +691,16 @@ export default function ProfileSetup() {
                         Your profile
                     </span>
 
-                    <h1>Create your profile</h1>
+                    <h1>
+                        {isEditMode
+                            ? "Edit your profile"
+                            : "Create your profile"}
+                    </h1>
 
                     <p>
-                        Complete these details to help us find
-                        meaningful matches.
+                        {isEditMode
+                            ? "Update your details. Your existing approved profile will remain active while changes are reviewed."
+                            : "Complete these details to help us find meaningful matches."}
                     </p>
                 </div>
 
@@ -560,24 +785,18 @@ export default function ProfileSetup() {
                             onChange={handleFieldChange}
                         />
 
+
                         {isLastStep && (
                             <ProfilePhotoUpload
                                 photos={values.photos}
                                 onChange={(photos) =>
-                                    handleFieldChange(
-                                        "photos",
-                                        photos
-                                    )
+                                    handleFieldChange("photos", photos)
                                 }
-                                disabled={
-                                    saving ||
-                                    [
-                                        "pending_review",
-                                        "rejected",
-                                    ].includes(profileStatus)
-                                }
+                                disabled={saving}
+                                isRevisionMode={isEditMode}
                             />
                         )}
+
 
                         <div className="profile-setup-actions">
                             <Button
@@ -594,7 +813,9 @@ export default function ProfileSetup() {
                                     isLoading={saving}
                                     loadingText="Submitting…"
                                 >
-                                    Submit for approval
+                                    {isEditMode
+                                        ? "Submit changes for review"
+                                        : "Submit for approval"}
                                 </Button>
                             ) : (
                                 <Button
@@ -608,9 +829,9 @@ export default function ProfileSetup() {
                         </div>
 
                         <p className="profile-setup-footnote">
-                            Your progress is saved as you continue.
-                            Your profile will not be visible to other
-                            members until it is approved.
+                            {isEditMode
+                                ? "Your existing approved profile remains active while your proposed changes are reviewed."
+                                : "Your progress is saved as you continue. Your profile will not be visible to other members until it is approved."}
                         </p>
                     </section>
                 </motion.div>
