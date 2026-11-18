@@ -100,7 +100,7 @@
     margin: 0 0 var(--space-2) var(--space-3);
     color: #6f78a8;
     font-size: var(--fs-xs);
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.02em;
 }
 
@@ -155,7 +155,7 @@
     color: #fff;
     font-size: 11px;
     font-style: normal;
-    font-weight: 700;
+    font-weight: 600;
     text-align: center;
 }
 
@@ -378,7 +378,7 @@
     display: block;
     color: var(--color-text);
     font-size: var(--fs-sm);
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .admin-profile-info span {

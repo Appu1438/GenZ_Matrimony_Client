@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import "./AdminLayout.css";
+import "./AdminCommon.css";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
 import AdminFooter from "./AdminFooter";
 
-const AdminLayout = () => {
+const AdminLayout = ({children}) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const location = useLocation();
 
@@ -42,7 +43,7 @@ const AdminLayout = () => {
 
                 <main id="admin-content" className="admin-content">
                     <div className="admin-page-container">
-                        <Outlet />
+                        {children}
                     </div>
                     <AdminFooter />
                 </main>

@@ -30,6 +30,9 @@ import AdminGuestRoute from "./routes/admin/AdminGuestRoute.jsx";
 import AdminLogin from "./pages/admin/auth/Login.jsx";
 import AdminProtectedRoute from "./routes/admin/AdminProtectedRoute.jsx";
 import AdminHome from "./pages/admin/home/Home.jsx";
+import Users from "./pages/admin/users/Users.jsx";
+import UserView from "./pages/admin/users/UserView.jsx";
+import Profiles from "./pages/admin/profiles/Profiles.jsx";
 
 export function App() {
   return (
@@ -85,6 +88,9 @@ export function App() {
       {/* Authenticated Admin Application */}
       <Route element={<AdminProtectedRoute><Outlet /></AdminProtectedRoute>}>
         <Route path="/admin/dashboard" element={<AdminHome />} />
+        <Route path="/admin/users" element={<Users />} />
+        <Route path="/admin/users/:id" element={<UserView />} />
+        <Route path="/admin/profiles" element={<Profiles />} />
 
       </Route>
 
