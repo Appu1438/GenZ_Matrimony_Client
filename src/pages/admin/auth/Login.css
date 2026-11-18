@@ -1,0 +1,308 @@
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-form__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  gap: var(--space-3);
+}
+
+.auth-form__link {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  text-decoration: none;
+}
+
+.auth-form__link:hover {
+  text-decoration: underline;
+}
+
+.auth-form__link--muted {
+  color: var(--color-text-muted);
+}
+
+.auth-form__banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+  background: var(--color-error-tint);
+  color: var(--color-error);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  animation: banner-in var(--dur-base) var(--ease-out);
+}
+
+.auth-form__banner--success {
+  background: var(--color-success-tint);
+  color: var(--color-success);
+}
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-form__legal {
+  margin-top: var(--space-6);
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.auth-form__legal a {
+  color: var(--color-text-muted);
+  text-decoration: underline;
+}
+
+.auth-form__hint-block {
+  margin-top: var(--space-2);
+}
+
+.auth-form__terms {
+  margin-bottom: var(--space-6);
+}
+
+/* ==========================================================================
+   Email Verification Notice
+   ========================================================================== */
+
+.auth-verification {
+  position: relative;
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  animation: banner-in var(--dur-base) var(--ease-out);
+}
+
+/* Header */
+
+.auth-verification__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.auth-verification__icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  background: var(--color-primary-tint);
+  border-radius: var(--radius-md);
+}
+
+.auth-verification__icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.auth-verification__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.auth-verification__heading h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text);
+}
+
+.auth-verification__heading span {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+/* Description */
+
+.auth-verification__description {
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+}
+
+/* Email address */
+
+.auth-verification__email {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.auth-verification__email-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+}
+
+.auth-verification__email-label svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.auth-verification__email strong {
+  color: var(--color-text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Resend button */
+
+.auth-verification__button {
+  width: 100%;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) ease,
+    transform var(--dur-fast) ease,
+    box-shadow var(--dur-fast) ease;
+}
+
+.auth-verification__button svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.auth-verification__button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  box-shadow: 0 4px 12px rgba(41, 82, 217, 0.18);
+}
+
+.auth-verification__button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.auth-verification__button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+
+.auth-verification__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: verification-spin 0.7s linear infinite;
+}
+
+@keyframes verification-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Supporting text */
+
+.auth-verification__hint {
+  margin-top: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Responsive */
+
+@media (max-width: 480px) {
+  .auth-verification {
+    padding: var(--space-4);
+    margin-top: var(--space-5);
+  }
+
+  .auth-verification__heading h3 {
+    font-size: var(--fs-base);
+  }
+
+  .auth-verification__email {
+    padding: var(--space-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-verification__spinner {
+    animation: none;
+  }
+}
+
+
+/* ==========================================================================
+   Admin Login
+   ========================================================================== */
+
+.admin-login-form {
+  width: 100%;
+}
+
+.admin-login__options {
+  justify-content: flex-start;
+  margin-bottom: var(--space-6);
+}
+
+.admin-login__footer {
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.admin-login-form .auth-form__legal {
+  max-width: 360px;
+  margin-right: auto;
+  margin-left: auto;
+}

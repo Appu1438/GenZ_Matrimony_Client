@@ -2,10 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
-import { AuthProvider } from './context/AuthContext.jsx';
+import { AuthProvider } from './context/user/AuthContext.jsx';
+import { ProfileProvider } from './context/user/ProfileContext.jsx';
 import './index.css';
 import { Toaster } from 'react-hot-toast';
-import { ProfileProvider } from './context/ProfileContext.jsx';
+import { AdminAuthProvider } from './context/admin/AdminAuthContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -31,7 +32,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       />
       <AuthProvider>
         <ProfileProvider>
-          <App />
+          <AdminAuthProvider>
+            <App />
+          </AdminAuthProvider>
         </ProfileProvider>
       </AuthProvider>
     </BrowserRouter>

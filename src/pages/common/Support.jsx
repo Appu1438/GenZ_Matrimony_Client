@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
-import PublicLayout from '../../components/layout/PublicLayout.jsx';
-import '../../styles/PublicPages.css';
+import PublicLayout from '../../components/user/layout/PublicLayout.jsx';
+import '../../styles/user/PublicPages.css';
 
 const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL;
 
