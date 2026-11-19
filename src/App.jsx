@@ -1,54 +1,60 @@
 
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
-// Authentication pages
+// User authentication
 import Login from "./pages/user/auth/Login.jsx";
 import Register from "./pages/user/auth/Register.jsx";
 import ForgotPassword from "./pages/user/auth/ForgotPassword.jsx";
 import ResetPassword from "./pages/user/auth/ResetPassword.jsx";
 import VerifyEmail from "./pages/user/auth/VerifyEmail.jsx";
 
-// Public information pages
+// Public pages
 import Terms from "./pages/common/Terms.jsx";
 import Privacy from "./pages/common/Privacy.jsx";
 import Support from "./pages/common/Support.jsx";
 
-// Application pages
+// User application
 import AppHome from "./pages/user/home/AppHome.jsx";
 import MyProfile from "./pages/user/profile/MyProfile.jsx";
 import Settings from "./pages/user/settings/Settings.jsx";
 
-// Onboarding pages
+// User onboarding
 import ProfileSetup from "./pages/user/onboarding/ProfileSetup.jsx";
 import ProfileStatus from "./pages/user/onboarding/ProfileStatus.jsx";
 
-// Route guards
-import ProtectedRoute from "./routes/user/ProtectedRoute.jsx";
+// User route guards
 import GuestRoute from "./routes/user/GuestRoute.jsx";
+import ProtectedRoute from "./routes/user/ProtectedRoute.jsx";
 import ProfileGate from "./routes/user/ProfileGate.jsx";
-import AdminGuestRoute from "./routes/admin/AdminGuestRoute.jsx";
+
+// Admin authentication
 import AdminLogin from "./pages/admin/auth/Login.jsx";
-import AdminProtectedRoute from "./routes/admin/AdminProtectedRoute.jsx";
+
+// Admin application
 import AdminHome from "./pages/admin/home/Home.jsx";
 import Users from "./pages/admin/users/Users.jsx";
 import UserView from "./pages/admin/users/UserView.jsx";
 import Profiles from "./pages/admin/profiles/Profiles.jsx";
 
+// Admin route guards
+import AdminGuestRoute from "./routes/admin/AdminGuestRoute.jsx";
+import AdminProtectedRoute from "./routes/admin/AdminProtectedRoute.jsx";
+
+
 export function App() {
   return (
     <Routes>
-
-      {/* Default Route */}
+      {/* Default */}
       <Route path="/" element={<Navigate to="/app" replace />} />
       <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
 
-      {/* Public information pages - No authentication or ProfileGate */}
+      {/* Public pages */}
       <Route path="/terms-and-conditions" element={<Terms />} />
       <Route path="/privacy-policy" element={<Privacy />} />
       <Route path="/support" element={<Support />} />
 
-      {/* Guest / Authentication Routes */}
-      <Route element={<GuestRoute><Outlet /></GuestRoute>}>
+      {/* User guest routes */}
+      <Route element={<GuestRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
@@ -56,47 +62,40 @@ export function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
 
-      {/* Authenticated Application */}
-      <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
-
-        {/* Profile status verification */}
-        <Route element={<ProfileGate><Outlet /></ProfileGate>}>
-
-          {/* Onboarding */}
+      {/* User protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<ProfileGate />}>
           <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/profile-status" element={<ProfileStatus />} />
 
-          {/* Approved member pages */}
           <Route path="/app" element={<AppHome />} />
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/settings" element={<Settings />} />
-          {/* Future application pages */}
-          {/* <Route path="/discover" element={<Discover />} /> */}
-          {/* <Route path="/matches" element={<Matches />} /> */}
-          {/* <Route path="/messages" element={<Messages />} /> */}
-          {/* <Route path="/notifications" element={<Notifications />} /> */}
-          {/* <Route path="/settings" element={<Settings />} /> */}
-
         </Route>
       </Route>
 
-      {/* Guest / Authentication Admin Routes */}
-      <Route element={<AdminGuestRoute><Outlet /></AdminGuestRoute>}>
+      {/* Admin guest routes */}
+      <Route element={<AdminGuestRoute />}>
         <Route path="/admin/login" element={<AdminLogin />} />
       </Route>
 
-      {/* Authenticated Admin Application */}
-      <Route element={<AdminProtectedRoute><Outlet /></AdminProtectedRoute>}>
+      {/* Admin protected routes */}
+      <Route element={<AdminProtectedRoute />}>
         <Route path="/admin/dashboard" element={<AdminHome />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/users/:id" element={<UserView />} />
         <Route path="/admin/profiles" element={<Profiles />} />
-
       </Route>
 
       {/* Fallback */}
-      <Route path="*" element={<Navigate to="/app" replace />} />
-
+      <Route
+        path="*"
+        element={
+          window.location.pathname.startsWith("/admin")
+            ? <Navigate to="/admin/dashboard" replace />
+            : <Navigate to="/app" replace />
+        }
+      />
     </Routes>
   );
 }

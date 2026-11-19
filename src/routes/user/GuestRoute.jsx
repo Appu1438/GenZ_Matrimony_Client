@@ -1,8 +1,8 @@
 
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/user/useAuth.js";
 
-export function GuestRoute({ children }) {
+export function GuestRoute( ) {
     const { isAuthenticated, isLoading } = useAuth();
     const location = useLocation();
 
@@ -30,7 +30,7 @@ export function GuestRoute({ children }) {
         );
     }
 
-    return children;
+    return <Outlet />;
 }
 
 export default GuestRoute;
